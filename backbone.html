@@ -28,60 +28,28 @@
 	var Todos = Backbone.Collection.extend({
 		model: TodoItem,
 		url: 'http://localhost:3000/todos'
-	})
-	//Collection Instance
-	var todos = new Todos;
-	//View Classs
+	});
+	//View Class
 	var TodoView = Backbone.View.extend({
 		render: function(){
 			var todoHTML = '<h3>' + this.model.get('description') + '</h3>';
-      return this;
+      return todoHTML;
 		}
 	});
+  //Collection Instance
+  var todos = new Todos;
+  //Fetch Todos from Rails
+  var refreshTodos = function(){
+    $('#app').empty();
+    todos.fetch({
+      success: function(todos){
+        todos.models.forEach(function(todo){
+          var todoView = new TodoView({model: todo});
+          $('#app').append(todoView.render());
+        })
+      }
+    });
+  };
 
-  todos.fetch({
-    success: function(todos){
-      todos.forEach(function(todo){
-        var todoView = new TodoView({model: todo});
-        console.log(todoView.render().el);
-        $('#app').append(todoView.render().el);
-      })
-    }
-  });
-
-  // var TodoListView = Backbone.View.extend({
-  // 	el: '#app',
-  // 	tagName: 'ul',
-  // 	className: 'todolist',
-  // 	initialize: function() {
-  //     this.template = _.template($('#todolist-template').html());
-  //     this.render();
-  //   },
-  // 	render: function(){
-  // 		that = this;
-  //       this.$el.empty();
-  //       this.$el.append(this.template());
-  //       this.collection.each(function(model) {
-  //         that.$el.append(new TodoView({model: model.toJSON()}).render().el);
-  //      	});
-  //     return this;
-  //  	}
-  // });
-
-	//Fetch todos from Rails
-	// todos.fetch({
-	// 	success: function(res){
-	// 		console.log("res", res);
-	// 	 	res.models.forEach(function(todoItem){
-	// 	  	//View Instance
-	// 	  	console.log("todoItem", todoItem);
-	// 			var todoView = new TodoView({ model: todoItem });
-	// 			console.log("todoView", todoView);
-	// 			//Render page
-	// 			$('#app').append(todoView.render().el);
-	// 	  });
-	// 	}
-	// });
- 
 </script>
 </html>
