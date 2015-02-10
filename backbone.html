@@ -10,32 +10,78 @@
 	<h1>Backbone!</h1>
 	<div id='app'>
 	</div>
+  <script type="text/template" id="todolist-template">
+  </script>
+  <script type="text/template" id="todo-template">
+  </script>
 </body>
 
 <script type="text/javascript">
 	//Model Class
-	var TodoItem = Backbone.Model.extend({});
-
-	//Model Instance
-	var todoItem = new TodoItem(
-    { description: 'Teach backbone', status: false }
-  );
-
+	var TodoItem = Backbone.Model.extend({
+		defaults: {
+			description: '',
+			status: false
+		}
+	});
+	//Collection Class
+	var Todos = Backbone.Collection.extend({
+		model: TodoItem,
+		url: 'http://localhost:3000/todos'
+	})
+	//Collection Instance
+	var todos = new Todos;
 	//View Classs
-  var TodoView = Backbone.View.extend({
-  	render: function(){
-  		var header = '<h3>' + this.model.get('description') + '</h3>';
-  		$(this.el).html(header);
-   	}
+	var TodoView = Backbone.View.extend({
+		render: function(){
+			var todoHTML = '<h3>' + this.model.get('description') + '</h3>';
+      return this;
+		}
+	});
+
+  todos.fetch({
+    success: function(todos){
+      todos.forEach(function(todo){
+        var todoView = new TodoView({model: todo});
+        console.log(todoView.render().el);
+        $('#app').append(todoView.render().el);
+      })
+    }
   });
 
-  //View Instance
-  var todoView = new TodoView({ model: todoItem });
+  // var TodoListView = Backbone.View.extend({
+  // 	el: '#app',
+  // 	tagName: 'ul',
+  // 	className: 'todolist',
+  // 	initialize: function() {
+  //     this.template = _.template($('#todolist-template').html());
+  //     this.render();
+  //   },
+  // 	render: function(){
+  // 		that = this;
+  //       this.$el.empty();
+  //       this.$el.append(this.template());
+  //       this.collection.each(function(model) {
+  //         that.$el.append(new TodoView({model: model.toJSON()}).render().el);
+  //      	});
+  //     return this;
+  //  	}
+  // });
 
-  //Render View
-  todoView.render();
-  //Attach to Page
-  $('#app').html(todoView.el);
-
+	//Fetch todos from Rails
+	// todos.fetch({
+	// 	success: function(res){
+	// 		console.log("res", res);
+	// 	 	res.models.forEach(function(todoItem){
+	// 	  	//View Instance
+	// 	  	console.log("todoItem", todoItem);
+	// 			var todoView = new TodoView({ model: todoItem });
+	// 			console.log("todoView", todoView);
+	// 			//Render page
+	// 			$('#app').append(todoView.render().el);
+	// 	  });
+	// 	}
+	// });
+ 
 </script>
 </html>
